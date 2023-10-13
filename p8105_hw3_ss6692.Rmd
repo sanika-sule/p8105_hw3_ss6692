@@ -60,7 +60,7 @@ group_by(state, year) |>
   summarize(avg_data_value = mean(data_value, na.rm = TRUE))
 ```
 ### We will use the excellent_df to create a spaghetti plot
-```{r}
+```{r excellent_plot}
 excellent_df |> 
   ggplot(aes(x = year, y = avg_data_value, color = state)) + 
   geom_line() +
@@ -69,7 +69,7 @@ excellent_df |>
         y = "Mean Data Value")
 ```
 
-```{r}
+```{r states_plot}
 nyc_df =
   brfss_df |>
   filter((year == 2006 | year == 2010) & state == "NY") |>
@@ -82,10 +82,40 @@ nyc_df |>
   labs(title = "NY state health responses in 2006 and 2010", 
         x = "Response",
         y = "Data Value") 
-
 ```
 
+## Problem 3
+```{r load_accel_df}
+nhanes_accel_df = read_csv(file = "data/nhanes_accel.csv")|>
+  janitor::clean_names()|>
+ pivot_longer(
+    min1:min1440,
+    names_to = "minute",
+    names_prefix = "min",
+    values_to = "mims"
+  )
+  
+```
 
+```{r load_covar_df}
+nhanes_covar_df = read_csv(file = "data/nhanes_covar.csv",skip = 4, na = "." )|>
+  janitor::clean_names() |>
+ mutate(
+    sex = ifelse(sex == 1, "Male", "Female"), 
+    education = case_match(education,
+                           "1" ~ "Less than High School", 
+                           "2" ~ "High School Equivalent", 
+                           "3" ~ "More than High School"), 
+    education = fct_relevel(education, c("Less than High School", "High School Equivalent", "More than High School"))
+    )|> 
+      filter(age >= 21) |> 
+      drop_na()
+```
+
+```{r merge_accel_covar}
+
+
+```
 
 
 
