@@ -3,5 +3,31 @@ title: "p8105_hw3_ss6692"
 output: github_document
 date: "2023-10-11"
 ---
+## Problem 2
+```{r libraries, message=FALSE}
+library(tidyverse)
+library(readxl)
+library(dplyr)
+library(janitor)
+library(tidyr)
+```
+### 
+```{r}
+library(p8105.datasets)
+data("brfss_smart2010")
+```
+
+```{r}
+brfss_data = brfss_smart2010 |>
+   janitor::clean_names()
+
+```
+
+
+
+
+
+
+
 
 
