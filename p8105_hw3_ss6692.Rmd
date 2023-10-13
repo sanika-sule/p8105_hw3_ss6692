@@ -11,6 +11,7 @@ library(dplyr)
 library(janitor)
 library(tidyr)
 library(knitr)
+library(viridis)
 ```
 ## Problem 2
 ### Loading the dataset
@@ -25,8 +26,7 @@ brfss_df = brfss_smart2010 |>
   select(-locationabbr)|>
   separate(locationdesc, into = c("state", "county"), sep = " - ")|>
     filter(topic == "Overall Health" & response %in% c("Excellent", "Very good", "Good", "Fair", "Poor")) |>
-    mutate(response = factor(response, levels = c("Poor", "Fair", "Good", "Very Good", "Excellent"), ordered = TRUE))|>
-filter(!is.na(response))
+    mutate(response = factor(response, levels = c("Poor", "Fair", "Good", "Very good", "Excellent"), ordered = TRUE))
 ```
 ## Now, we will find which states which states were observed at 7 or more locations in 2002.
 ```{r states_2002}
@@ -59,7 +59,31 @@ excellent_df =
 group_by(state, year) |>
   summarize(avg_data_value = mean(data_value, na.rm = TRUE))
 ```
-### We will use the e
+### We will use the excellent_df to create a spaghetti plot
+```{r}
+excellent_df |> 
+  ggplot(aes(x = year, y = avg_data_value, color = state)) + 
+  geom_line() +
+  labs(title = "Mean data values of Excellent responses by state ", 
+        x = "Year",
+        y = "Mean Data Value")
+```
+
+```{r}
+nyc_df =
+  brfss_df |>
+  filter((year == 2006 | year == 2010) & state == "NY") |>
+  select(year, response, data_value, county)
+  
+nyc_df |>
+  ggplot(aes(x=response, y=data_value)) +
+  geom_point() +
+  facet_grid(. ~ year) + 
+  labs(title = "NY state health responses in 2006 and 2010", 
+        x = "Response",
+        y = "Data Value") 
+
+```
 
 
 
