@@ -103,6 +103,8 @@ As shown by the plots, 2010 had better health responses, with a peak at very goo
 
 ## Problem 3
 
+### Here, we are loading and cleaning the nhanes_accel data set
+
 ```{r load_accel_df}
 nhanes_accel_df = read_csv(file = "data/nhanes_accel.csv")|>
   janitor::clean_names()|>
@@ -114,6 +116,8 @@ nhanes_accel_df = read_csv(file = "data/nhanes_accel.csv")|>
   )
   
 ```
+
+### Here, we are loading and cleaning the nhanes_covar data set
 
 ```{r load_covar_df}
 nhanes_covar_df = read_csv(file = "data/nhanes_covar.csv",skip = 4, na = "." )|>
@@ -129,6 +133,8 @@ nhanes_covar_df = read_csv(file = "data/nhanes_covar.csv",skip = 4, na = "." )|>
       filter(age >= 21) |> 
       drop_na()
 ```
+
+### Now, we are merging the two cleaned datasets
 
 ```{r merge_accel_covar}
 MIMS_df = 
