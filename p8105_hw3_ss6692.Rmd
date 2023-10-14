@@ -3,7 +3,7 @@ title: "p8105_hw3_ss6692"
 output: github_document
 date: "2023-10-11"
 ---
-## Problem 2
+
 ```{r libraries, message=FALSE}
 library(tidyverse)
 library(readxl)
@@ -14,12 +14,16 @@ library(knitr)
 library(viridis)
 ```
 ## Problem 2
+
 ### Loading the dataset
+
 ```{r load_brfss_smart2010}
 library(p8105.datasets)
 data("brfss_smart2010")
 ```
+
 ### Here, we are cleaning the data and filtering for "Overall Health." We will then order the responses from Poor to Excellent.
+
 ```{r clean_and_order_brfss_df}
 brfss_df = brfss_smart2010 |>
   janitor::clean_names()|>
@@ -28,7 +32,9 @@ brfss_df = brfss_smart2010 |>
     filter(topic == "Overall Health" & response %in% c("Excellent", "Very good", "Good", "Fair", "Poor")) |>
     mutate(response = factor(response, levels = c("Poor", "Fair", "Good", "Very good", "Excellent"), ordered = TRUE))
 ```
-## Now, we will find which states which states were observed at 7 or more locations in 2002.
+
+### Now, we will find which states which states were observed at 7 or more locations in 2002.
+
 ```{r states_2002}
 brfss_2002_df = 
    brfss_df|>
@@ -38,7 +44,11 @@ brfss_2002_df =
     filter(count >= 7)
 kable(brfss_2002_df)
 ```
-## Now we are finding the same information for 2010.
+
+In 2002, `r nrow(brfss_2002_df)` states were observed at 7 or more locations.
+
+### Now we are finding the same information for 2010.
+
 ```{r states_2010}
 brfss_2010_df = 
    brfss_df|>
@@ -48,7 +58,8 @@ brfss_2010_df =
     filter(count >= 7)
 kable(brfss_2010_df)
 ```
-In 2002, the following states ` r kable(brfss_2002_df)` were observed at 7 or more locations.
+
+In 2010, `r nrow(brfss_2010_df)` states were observed at 7 or more locations.
 
 ### Now, we are creating a dataset containing only "Excellent" responses. We will also add a new variable that averages `data_value` across locations, but within states.
 
@@ -59,7 +70,9 @@ excellent_df =
 group_by(state, year) |>
   summarize(avg_data_value = mean(data_value, na.rm = TRUE))
 ```
+
 ### We will use the excellent_df to create a spaghetti plot
+
 ```{r excellent_plot}
 excellent_df |> 
   ggplot(aes(x = year, y = avg_data_value, color = state)) + 
@@ -68,6 +81,8 @@ excellent_df |>
         x = "Year",
         y = "Mean Data Value")
 ```
+
+The spaghetti plot shows the mean data values of excellent responses by state. In general, most states observe mean data values of excellend reposnses around 20-25. 
 
 ```{r states_plot}
 nyc_df =
@@ -84,7 +99,10 @@ nyc_df |>
         y = "Data Value") 
 ```
 
+As shown by the plots, 2010 had better health responses, with a peak at very good responses. In 2006, the data value peaks at good-very good responses. 
+
 ## Problem 3
+
 ```{r load_accel_df}
 nhanes_accel_df = read_csv(file = "data/nhanes_accel.csv")|>
   janitor::clean_names()|>
@@ -116,14 +134,21 @@ nhanes_covar_df = read_csv(file = "data/nhanes_covar.csv",skip = 4, na = "." )|>
 MIMS_df = 
   inner_join(nhanes_covar_df, nhanes_accel_df)
 ```
+
 ### Now we are creating a table to show the number of males and females in each education group.
+
 ```{r education_table_by_sex}
 education_df = MIMS_df |>
   group_by(education, sex) |>
   summarize(count = n()) |>
-  pivot_wider(names_from = sex, values_from = count)
+  pivot_wider(names_from = sex, values_from = count) 
+kable(education_df)
 ```
+
+The table shows that more than a high school education is the largest education group, and females with a high school equivalent education is the smalles group.
+
 ### Now, we will create a visualization of the age distributions for men and women in each education category.
+
 ```{r education_boxplot}
 ggplot(MIMS_df, aes(x = education, y = age, fill = sex)) +
   geom_boxplot() +
@@ -132,10 +157,12 @@ ggplot(MIMS_df, aes(x = education, y = age, fill = sex)) +
        y = "age") +
   theme_minimal()
 ```
+
 As shown by the box plot, males and females with more than a high school education have the lowest median age, and females with less than a high school education and high school equivalent education have the highest median age. The age distribution of both males and females with more than a high school education is right skewed, and the distribution of both males and females of a high school equivalent education, and females with less than a high school education is slightly left skewed. The age distribution of males with less than a high school education is fairly normally distributed.
 
 ### Now, we will make a plot to show the distributin of total activity by sex and education level.
-```{r}
+
+```{r total_activity_plot}
 MIMS_df |> 
   group_by(seqn, age, sex, education) |> 
   summarize(total_activity = sum(mims)) |> 
@@ -148,9 +175,12 @@ MIMS_df |>
         y = "Total Activity (MIMS)") +
     scale_color_viridis_d() 
 ```
+
 As shown by all three panels of the plot, total activity tends to decrease as age increases, regardless of education level. Both men and women with less than a high school education have the highest total activity level across groups around age 20. 
+
 ### Finally, we are making a plot to visualize 24-hr activity time courses by education and sex.
-```{r}
+
+```{r 24-hr_time_plot}
 MIMS_df |>
   mutate(
     minute = as.numeric(minute)
@@ -163,6 +193,7 @@ ggplot(aes(x = minute, y = mims, color = sex)) +
         y = "Activity (mims)") +
       scale_color_viridis_d() 
 ```
+
 Across all three education levels and both sexes, activity level reaches a peak around the 500th minute of the day. Both men and women with more than a high school education have the highest peak at 500 minutes of about 75 MIMS. We observe another peak among men with more than a high school education around minute 1250, with the highest point reaching over 100 MIMS.
 
 
