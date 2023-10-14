@@ -116,7 +116,7 @@ nhanes_covar_df = read_csv(file = "data/nhanes_covar.csv",skip = 4, na = "." )|>
 MIMS_df = 
   inner_join(nhanes_covar_df, nhanes_accel_df)
 ```
-### Now we are creating a table to show the number of males and females in each educatio group.
+### Now we are creating a table to show the number of males and females in each education group.
 ```{r education_table_by_sex}
 education_df = MIMS_df |>
   group_by(education, sex) |>
@@ -133,6 +133,7 @@ ggplot(MIMS_df, aes(x = education, y = age, fill = sex)) +
   theme_minimal()
 ```
 As shown by the box plot, males and females with more than a high school education have the lowest median age, and females with less than a high school education and high school equivalent education have the highest median age. The age distribution of both males and females with more than a high school education is right skewed, and the distribution of both males and females of a high school equivalent education, and females with less than a high school education is slightly left skewed. The age distribution of males with less than a high school education is fairly normally distributed.
+
 ### Now, we will make a plot to show the distributin of total activity by sex and education level.
 ```{r}
 MIMS_df |> 
@@ -147,7 +148,7 @@ MIMS_df |>
         y = "Total Activity (MIMS)") +
     scale_color_viridis_d() 
 ```
-
+As shown by all three panels of the plot, total activity tends to decrease as age increases, regardless of education level. Both men and women with less than a high school education have the highest total activity level across groups around age 20. 
 ### Finally, we are making a plot to visualize 24-hr activity time courses by education and sex.
 ```{r}
 MIMS_df |>
@@ -162,7 +163,7 @@ ggplot(aes(x = minute, y = mims, color = sex)) +
         y = "Activity (mims)") +
       scale_color_viridis_d() 
 ```
-
+Across all three education levels and both sexes, activity level reaches a peak around the 500th minute of the day. Both men and women with more than a high school education have the highest peak at 500 minutes of about 75 MIMS. We observe another peak among men with more than a high school education around minute 1250, with the highest point reaching over 100 MIMS.
 
 
 
