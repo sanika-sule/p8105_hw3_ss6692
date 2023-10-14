@@ -124,15 +124,44 @@ education_df = MIMS_df |>
   pivot_wider(names_from = sex, values_from = count)
 ```
 ### Now, we will create a visualization of the age distributions for men and women in each education category.
-```{r}
+```{r education_boxplot}
 ggplot(MIMS_df, aes(x = education, y = age, fill = sex)) +
   geom_boxplot() +
-  labs(title = "Age Distributions by Education and Gender",
-       x = "Education",
-       y = "Age") +
+  labs(title = "Age distributions by education and sex",
+       x = "education",
+       y = "age") +
   theme_minimal()
 ```
+As shown by the box plot, males and females with more than a high school education have the lowest median age, and females with less than a high school education and high school equivalent education have the highest median age. The age distribution of both males and females with more than a high school education is right skewed, and the distribution of both males and females of a high school equivalent education, and females with less than a high school education is slightly left skewed. The age distribution of males with less than a high school education is fairly normally distributed.
+### Now, we will make a plot to show the distributin of total activity by sex and education level.
+```{r}
+MIMS_df |> 
+  group_by(seqn, age, sex, education) |> 
+  summarize(total_activity = sum(mims)) |> 
+  ggplot(aes(x = age, y = total_activity, color = sex)) + 
+  geom_point() +
+  geom_smooth() +
+  facet_grid(. ~ education) + 
+  labs(title = "Total activity by sex and education level", 
+        x = "Age",
+        y = "Total Activity (MIMS)") +
+    scale_color_viridis_d() 
+```
 
+### Finally, we are making a plot to visualize 24-hr activity time courses by education and sex.
+```{r}
+MIMS_df |>
+  mutate(
+    minute = as.numeric(minute)
+  ) |> 
+ggplot(aes(x = minute, y = mims, color = sex)) +
+   geom_point(alpha = 0.5) +
+  facet_grid(. ~ education) + 
+  labs(title = "24-hr activity time courses by education and sex", 
+        x = "Minute of the Day",
+        y = "Activity (mims)") +
+      scale_color_viridis_d() 
+```
 
 
 
